@@ -44,6 +44,15 @@ void tuning::make_tuning(int n_keys, bool mirror) {
 			temp_i.push_back(sorted[sorted.size()-i].get_val1());
 			i++;
 		}
+		bool prime = false;
+		for(int i=0; i<mid; i++) {
+			if(temp_i[i] == 1) prime = true;
+		}
+		if(prime == false) {
+			temp_i.pop_back();
+			temp_i.push_back(1);
+		}
+
 		for(int key=0; key<(n_keys - mid); key++) {
 			temp_i.push_back(2.0/temp_i[key]);
 		}
@@ -71,6 +80,15 @@ void tuning::make_tuning(int n_keys, bool mirror) {
 			
 			temp_i.push_back(sorted[sorted.size()-key].get_val1());
 		}
+		bool prime = false;
+		for(int i=0; i<n_keys; i++) {
+			if(temp_i[i] == 1) prime = true;
+		}
+		if(prime == false) {
+			temp_i.pop_back();
+			temp_i.push_back(1);
+		}
+
 		//	quick sorting:
 		interv.clear();
 		for(int key = 0; key<n_keys; key++) {
@@ -152,7 +170,7 @@ float** tuning::dissonance_curve(float* partials, long f0bin, long N, int f_fs, 
 	//calculate dissonance curve:
 	int diss_curve_len = 0;
 	float f0 = (float)f0bin * ((float)f_fs/((float)(2*N)));
-	for(float freq=f0; freq<f0*2; freq+=(0.5*calc_ERB_freq(freq, f_fs, N))) diss_curve_len++;
+	for(float freq=f0; freq<f0*2.2; freq+=(0.5*calc_ERB_freq(freq, f_fs, N))) diss_curve_len++;
 	std::cout<<"diss curve len: "<<diss_curve_len<<std::endl;
 
 	double* diss_curve = new double[diss_curve_len];		// allocate memory
