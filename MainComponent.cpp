@@ -6,6 +6,7 @@
   ==============================================================================
 */
 
+#include "plaatje.h"
 #include "MainComponent.h"
 #include "AudioCallback.h"
 #include "loadfile.h"
@@ -22,35 +23,48 @@
 
 MainContentComponent::MainContentComponent()
 {
+this->backgroundtled_jpg = (const char*) resource_GuiTest_backgroundtled_jpg;
+this->backgroundtled_jpgSize = 26744;
+
+this->cachedImage_backgroundtled_jpg = ImageCache::getFromMemory (backgroundtled_jpg, backgroundtled_jpgSize);
     setSize (500, 400);
 
 	is_file_loaded = false;
 	is_calc_done = false;
-	tn_sldr = new Slider(("lekker sliden!"));
-	(*tn_sldr).setBounds(50, 50, 260, 50);
+	
+	tn_sldr = new Slider(("Tones per Octave"));
+		tn_sldr->setBounds (8, 128, 352, 24);
+    		tn_sldr->setSliderStyle (Slider::LinearHorizontal);
+	    	tn_sldr->setTextBoxStyle (Slider::TextBoxLeft, false, 80, 20);
+	    	tn_sldr->setColour (Slider::thumbColourId, Colours::blue);
+	    	tn_sldr->addListener (this);
+		(*tn_sldr).setRange(5, 11, 1);
 	addAndMakeVisible(tn_sldr);
-	(*tn_sldr).addListener(this);
-
-
-	(*tn_sldr).setRange(5, 11, 1);
-
-	th_sldr = new Slider(("lekker sliden!"));
-	(*th_sldr).setBounds(100, 50, 50, 260);
-	(*th_sldr).setSliderStyle(Slider::LinearVertical);
-	addAndMakeVisible(th_sldr);
-	(*th_sldr).addListener(this);
+	
+	th_sldr = new Slider(("Threshold"));
+   		th_sldr->setSliderStyle (Slider::LinearHorizontal);
+   	  	th_sldr->setTextBoxStyle (Slider::TextBoxLeft, false, 80, 20);
+  	  	th_sldr->setColour (Slider::thumbColourId, Colours::blue);
+  	  	th_sldr->addListener (this);
+		th_sldr->setBounds (8, 96, 352, 40);
+			addAndMakeVisible(th_sldr);
 
 	(*th_sldr).setRange(1, 2, 0.1);
 
- 	load_but = new TextButton(("play"));
-    (*load_but).setBounds(10, 10, 50, 20);
-    addAndMakeVisible(load_but);
-    (*load_but).addListener(this);
-    
+ 	load_but = new TextButton(("Load"));
+		load_but->setBounds (8, 16, 80, 24);
+	 	load_but->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
+		load_but->addListener (this);
+		load_but->setColour (TextButton::buttonColourId, Colour (0xff4949ff));
+	addAndMakeVisible(load_but);
+
     calc_but = new TextButton(("Calc."));
-    (*calc_but).setBounds(100, 10, 50, 20);
-    addAndMakeVisible(calc_but);
-    (*calc_but).addListener(this);
+		calc_but->setBounds (8, 48, 104, 24);
+	    	calc_but->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    		calc_but->addListener (this);
+		calc_but->setColour (TextButton::buttonColourId, Colour (0xff6d6dff));
+	 addAndMakeVisible(calc_but);
+
 
 	addKeyListener(this);
 	setWantsKeyboardFocus(true);
@@ -107,9 +121,12 @@ void MainContentComponent::change_keyboard(int keys) {
 	keyboard.clear();
 	this->key_count = keys;
 	for(int key=0; key<key_count-1; key++) {
-		keyboard.push_back(new TextButton((" ")));
+		keyboard.push_back(new TextButton(("|")));
+		  	keyboard[key]->setConnectedEdges (Button::ConnectedOnTop);
+   		 	keyboard[key]->addListener (this);
+    			keyboard[key]->setColour (TextButton::buttonColourId, Colour (0xffff5656));
 		// maak plaatje!
-		keyboard[key]->setBounds(50+25*key, 100, 20, 50);
+		keyboard[key]->setBounds(35+40*key, 300, 30, 80);
 		addAndMakeVisible(keyboard[key]);
 		keyboard[key]->addListener(this);
 	}
@@ -220,7 +237,11 @@ void MainContentComponent::paint (Graphics& g)
 
     g.setFont (Font (16.0f));
     g.setColour (Colours::black);
-    g.drawText ("Hello World!", getLocalBounds(), Justification::centred, true);
+	g.drawImage (cachedImage_backgroundtled_jpg,
+                 0, 0, 568, 568,
+                 0, 0, cachedImage_backgroundtled_jpg.getWidth(), cachedImage_backgroundtled_jpg.getHeight());
+    g.drawText ("Stempler!", getLocalBounds(), Justification::centred, true);
+
 }
 
 void MainContentComponent::resized()
@@ -250,5 +271,4 @@ float note::get_samp() {
 
 	return sample;
 }
-
 
