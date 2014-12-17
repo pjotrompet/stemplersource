@@ -34,23 +34,30 @@ MainContentComponent::MainContentComponent()
 
 	(*tn_sldr).setRange(3, 12, 1);
 
-	th_sldr = new Slider(("lekker sliden!"));
-	(*th_sldr).setBounds(100, 50, 50, 260);
-	(*th_sldr).setSliderStyle(Slider::LinearVertical);
-	addAndMakeVisible(th_sldr);
-	(*th_sldr).addListener(this);
+	th_sldr = new Slider(("Threshold"));
+   		th_sldr->setSliderStyle (Slider::LinearHorizontal);
+   	  	th_sldr->setTextBoxStyle (Slider::TextBoxLeft, false, 80, 20);
+  	  	th_sldr->setColour (Slider::thumbColourId, Colours::blue);
+  	  	th_sldr->addListener (this);
+		th_sldr->setBounds (8, 96, 352, 40);
+			addAndMakeVisible(th_sldr);
 
 	(*th_sldr).setRange(1, 2, 0.1);
 
- 	load_but = new TextButton(("play"));
-    (*load_but).setBounds(10, 10, 50, 20);
-    addAndMakeVisible(load_but);
-    (*load_but).addListener(this);
-    
+ 	load_but = new TextButton(("Load"));
+		load_but->setBounds (8, 16, 80, 24);
+	 	load_but->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
+		load_but->addListener (this);
+		load_but->setColour (TextButton::buttonColourId, Colour (0xff4949ff));
+	addAndMakeVisible(load_but);
+
     calc_but = new TextButton(("Calc."));
-    (*calc_but).setBounds(100, 10, 50, 20);
-    addAndMakeVisible(calc_but);
-    (*calc_but).addListener(this);
+		calc_but->setBounds (8, 48, 104, 24);
+	    	calc_but->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    		calc_but->addListener (this);
+		calc_but->setColour (TextButton::buttonColourId, Colour (0xff6d6dff));
+	 addAndMakeVisible(calc_but);
+
 
 	addKeyListener(this);
 	setWantsKeyboardFocus(true);
