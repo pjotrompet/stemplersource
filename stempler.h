@@ -26,7 +26,9 @@ private:
 class tuning {
 public:
 	tuning(float* mX, long N, int keys, bool mirror, float tresh, int f_fs);
+	void make_tuning(int n_keys, bool mirror);
 	float get_key(int which_key);
+	std::vector<float>interv;
 private:
 	std::vector<key> keys;
 	float* get_peaks(float* mX, long N, bool smooth, float tresh);
@@ -37,6 +39,7 @@ private:
 	void sort(float** diss, long len);
 
 	std::vector<vals>sorted;
+
 };
 
 

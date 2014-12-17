@@ -30,7 +30,7 @@ MainContentComponent::MainContentComponent()
 	(*tn_sldr).addListener(this);
 
 
-	(*tn_sldr).setRange(3, 48, 1);
+	(*tn_sldr).setRange(3, 12, 1);
 
 	th_sldr = new Slider(("lekker sliden!"));
 	(*th_sldr).setBounds(100, 50, 50, 260);
@@ -38,7 +38,7 @@ MainContentComponent::MainContentComponent()
 	addAndMakeVisible(th_sldr);
 	(*th_sldr).addListener(this);
 
-	(*th_sldr).setRange(1, 100);
+	(*th_sldr).setRange(1, 2, 0.1);
 
  	load_but = new TextButton(("play"));
     (*load_but).setBounds(10, 10, 50, 20);
@@ -64,7 +64,7 @@ MainContentComponent::MainContentComponent()
 	toonh.push_back(2);
 
 	// init keyboard:
-	change_keyboard(key_count);
+	//change_keyboard(key_count);
 	//
 
 
@@ -84,7 +84,7 @@ void MainContentComponent::buttonClicked(Button* button) {
 	} else {
 		int key = 0;
 		while((button != keyboard[key]) && key < keyboard.size()) ++key;
-		float speed = toonh[key];
+		float speed = (*ladder).interv[key];
 		notes.push_back(note(file_buf, file_len, file_chn, speed));
 		std::cout<<"notes: "<<notes.size()<<std::endl;
 	}
@@ -105,12 +105,13 @@ void MainContentComponent::change_keyboard(int keys) {
 	keyboard.clear();
 	this->key_count = keys;
 	for(int key=0; key<key_count; key++) {
-		keyboard.push_back(new ImageButton((" ")));
+		keyboard.push_back(new TextButton((" ")));
 		// maak plaatje!
 		keyboard[key]->setBounds(50+25*key, 100, 20, 50);
 		addAndMakeVisible(keyboard[key]);
 		keyboard[key]->addListener(this);
 	}
+	(*ladder).make_tuning(keys, mirror_tuning);
 }
 
 void MainContentComponent::load_button() {

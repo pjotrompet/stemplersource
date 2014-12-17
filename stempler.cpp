@@ -29,8 +29,67 @@ tuning::tuning(float* mX, long N, int n_keys, bool mirror, float tresh, int f_fs
 		std::cout<<"interv: "<<sorted[i].get_val1()<<"\tdiss:\t"<<sorted[i].get_val2()<<std::endl;
 	}
 																	//	5: distill tuning from dissonance curve, n_keys and mirror
+	make_tuning(n_keys, mirror);
 	
 }// tuning()
+
+void tuning::make_tuning(int n_keys, bool mirror) {
+	if(mirror == true) {
+		int mid = n_keys/2;
+		if(((float)n_keys/2.0) != n_keys/2)	++mid;
+		std::vector<float>temp_i;
+		int i = 0;
+		for(int kc=0; kc<mid; kc++) {
+			while((sorted[sorted.size()-i].get_val1() < (3.0/2)) && (sorted[sorted.size()-i].get_val1() > 0)) i++;
+			temp_i.push_back(sorted[sorted.size()-i].get_val1());
+			i++;
+		}
+		for(int key=0; key<(n_keys - mid); key++) {
+			temp_i.push_back(2.0/temp_i[key]);
+		}
+		//	quick sorting:
+		interv.clear();
+		for(int key = 0; key<n_keys; key++) {
+			float max_interv = 10;
+			int max_i = 0;
+			for(int i=0; i<temp_i.size(); i++) {
+				if(max_interv>temp_i[i]) {
+					max_interv = temp_i[i];
+					max_i = i;
+				}
+			}
+			interv.push_back(max_interv);
+			std::cout<<"interval: "<<interv[key]<<std::endl;
+			temp_i.erase(temp_i.begin() + max_i);
+		}	//	end of sorting;
+
+
+		
+	} else {
+		std::vector<float>temp_i;
+		for(int key = 0; key<n_keys; key++) {
+			temp_i.push_back(sorted[sorted.size()-key-1].get_val1());
+		}
+		//	quick sorting:
+		interv.clear();
+		for(int key = 0; key<n_keys; key++) {
+			float max_interv = 10;
+			int max_i = 0;
+			for(int i=0; i<temp_i.size(); i++) {
+				if(max_interv>temp_i[i]) {
+					max_interv = temp_i[i];
+					max_i = i;
+				}
+			}
+			interv.push_back(max_interv);
+			std::cout<<"interval: "<<interv[key]<<std::endl;
+			temp_i.erase(temp_i.begin() + max_i);
+		}	//	end of sorting;
+	}
+	
+
+	
+}
 
 void tuning::sort(float** diss, long len) {
 	std::vector<vals> disson;

@@ -80,7 +80,7 @@ private:
 
     TextButton* load_but;
     TextButton* calc_but;
-	std::vector<ImageButton*> keyboard;
+	std::vector<TextButton*> keyboard;
 	Slider* tn_sldr;
 	Slider* th_sldr;
 	void change_keyboard(int keys);	
