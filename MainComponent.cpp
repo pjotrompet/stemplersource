@@ -48,7 +48,7 @@ MainContentComponent::MainContentComponent()
 	
 	key_count = 3;								// amount of notes in tuning (per octave?) 	<-- maak een slider voor keuze aantal tonen?
 	mirror_tuning = true;						// invert intervals around 3/2				<-- maak schakelaar voor keuze inverteren?
-	peak_tresh = 0.01;							// peakdetection treshold					<--	maak een slider/draaiknop voor treshold?
+	peak_tresh = 0;							// peakdetection treshold					<--	maak een slider/draaiknop voor treshold?
 
 	toonh.push_back(1);
 	toonh.push_back(3.0/2);

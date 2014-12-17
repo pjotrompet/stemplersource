@@ -15,15 +15,14 @@ float* load_file(const juce::String filepath, long* length, int* chn, int* f_fs)
 
 	int i=0;
     while(filepath[i] != '\0') {
-			printf("%c\n", filepath[i]);
         i++;
     }
 
 	char* fp = new char[i]; 
      i = 0;
-	printf("start reading\n");
+
     while(filepath[i] != '\0') {
-			printf("%c\n", filepath[i]);
+
         fp[i] = (const char) filepath[i];
         i++;
     }
@@ -40,12 +39,10 @@ float* load_file(const juce::String filepath, long* length, int* chn, int* f_fs)
     unsigned int chn_num = in_info.channels;
 	int fs = in_info.samplerate;
 
-    printf("num_frames: %li\n", num_frames);
-    printf("channels: %i\n", chn_num);
 
     float buffer[num_frames*chn_num];
     unsigned long int frames_read = sf_readf_float(in_file, buffer, num_frames);
-    printf("read %li frames form file\n", frames_read);
+
 
 	float* out_buf = new float[num_frames*chn_num];
 	for(long n=0; n<num_frames*chn_num; n++) {
