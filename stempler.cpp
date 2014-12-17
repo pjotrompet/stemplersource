@@ -46,7 +46,7 @@ void tuning::make_tuning(int n_keys, bool mirror) {
 		}
 		bool prime = false;
 		for(int i=0; i<mid; i++) {
-			if(temp_i[i] == 0) prime = true;
+			if(temp_i[i] == 1) prime = true;
 		}
 		if(prime == false) {
 			temp_i.pop_back();
@@ -82,7 +82,7 @@ void tuning::make_tuning(int n_keys, bool mirror) {
 		}
 		bool prime = false;
 		for(int i=0; i<n_keys; i++) {
-			if(temp_i[i] == 0) prime = true;
+			if(temp_i[i] == 1) prime = true;
 		}
 		if(prime == false) {
 			temp_i.pop_back();
