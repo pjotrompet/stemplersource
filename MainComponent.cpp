@@ -94,7 +94,8 @@ void MainContentComponent::change_keyboard(int keys) {
 	keyboard.clear();
 	this->key_count = keys;
 	for(int key=0; key<key_count; key++) {
-		keyboard.push_back(new TextButton((" ")));
+		keyboard.push_back(new ImageButton((" ")));
+		// maak plaatje!
 		keyboard[key]->setBounds(50+25*key, 100, 20, 50);
 		addAndMakeVisible(keyboard[key]);
 		keyboard[key]->addListener(this);

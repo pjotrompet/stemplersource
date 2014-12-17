@@ -77,7 +77,7 @@ private:
 
     TextButton* load_but;
     TextButton* calc_but;
-	std::vector<TextButton*> keyboard;
+	std::vector<ImageButton*> keyboard;
 	Slider* tn_sldr;
 	void change_keyboard(int keys);	
 
