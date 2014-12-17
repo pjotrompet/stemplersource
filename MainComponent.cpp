@@ -24,6 +24,8 @@ MainContentComponent::MainContentComponent()
 {
     setSize (500, 400);
 
+	is_file_loaded = false;
+	is_calc_done = false;
 	tn_sldr = new Slider(("lekker sliden!"));
 	(*tn_sldr).setBounds(50, 50, 260, 50);
 	addAndMakeVisible(tn_sldr);
@@ -56,12 +58,8 @@ MainContentComponent::MainContentComponent()
 	out_buf = new float[512];
 	
 	key_count = 3;								// amount of notes in tuning (per octave?) 	<-- maak een slider voor keuze aantal tonen?
-	mirror_tuning = true;						// invert intervals around 3/2				<-- maak schakelaar voor keuze inverteren?
+	mirror_tuning = false;						// invert intervals around 3/2				<-- maak schakelaar voor keuze inverteren?
 	peak_tresh = 10;							// peakdetection treshold					<--	maak een slider/draaiknop voor treshold?
-
-	toonh.push_back(1);
-	toonh.push_back(3.0/2);
-	toonh.push_back(2);
 
 	// init keyboard:
 	//change_keyboard(key_count);
@@ -78,15 +76,19 @@ MainContentComponent::~MainContentComponent()
 void MainContentComponent::buttonClicked(Button* button) {
     if(button == load_but) {
 		load_button();
+		is_file_loaded = true;
 		this->startAudioCallback();
 	} else if (button == calc_but) {
-		calc_tuning();
-	} else {
+		if(is_file_loaded) { 
+			calc_tuning();
+			is_calc_done = true;
+		}
+	} else if (is_file_loaded && is_calc_done) {
 		int key = 0;
 		while((button != keyboard[key]) && key < keyboard.size()) ++key;
-		float speed = (*ladder).interv[key];
+		float speed = (*ladder).interv[key+1];
 		notes.push_back(note(file_buf, file_len, file_chn, speed));
-		std::cout<<"notes: "<<notes.size()<<std::endl;
+		std::cout<<"notes: "<<speed<<std::endl;
 	}
 }
 
@@ -104,14 +106,14 @@ void MainContentComponent::change_keyboard(int keys) {
 	}
 	keyboard.clear();
 	this->key_count = keys;
-	for(int key=0; key<key_count; key++) {
+	for(int key=0; key<key_count-1; key++) {
 		keyboard.push_back(new TextButton((" ")));
 		// maak plaatje!
 		keyboard[key]->setBounds(50+25*key, 100, 20, 50);
 		addAndMakeVisible(keyboard[key]);
 		keyboard[key]->addListener(this);
 	}
-	(*ladder).make_tuning(keys, mirror_tuning);
+	if(is_file_loaded && is_calc_done) (*ladder).make_tuning(keys, mirror_tuning);
 }
 
 void MainContentComponent::load_button() {
@@ -208,7 +210,7 @@ bool MainContentComponent::keyPressed(const KeyPress &key, Component *origin) {
 	}
 
 	notes.push_back(note(file_buf, file_len, file_chn, speed));
-	std::cout<<"notes: "<<notes.size()<<std::endl;
+	std::cout<<"notes: "<<speed<<std::endl;
 }
 
 

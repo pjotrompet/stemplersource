@@ -60,13 +60,14 @@ public:
 	int file_fs;
 	long file_len;
 	int file_chn;
+	bool is_file_loaded;
 
 	float* file_mX;
 	float* file_pX;
 
 	std::vector<float> toonh;
 	
-
+	bool is_calc_done;
 	tuning* ladder;
 	int key_count;
 	bool mirror_tuning;

@@ -50,7 +50,7 @@ void tuning::make_tuning(int n_keys, bool mirror) {
 		//	quick sorting:
 		interv.clear();
 		for(int key = 0; key<n_keys; key++) {
-			float max_interv = 10;
+			float max_interv = 100;
 			int max_i = 0;
 			for(int i=0; i<temp_i.size(); i++) {
 				if(max_interv>temp_i[i]) {
@@ -68,12 +68,13 @@ void tuning::make_tuning(int n_keys, bool mirror) {
 	} else {
 		std::vector<float>temp_i;
 		for(int key = 0; key<n_keys; key++) {
-			temp_i.push_back(sorted[sorted.size()-key-1].get_val1());
+			
+			temp_i.push_back(sorted[sorted.size()-key].get_val1());
 		}
 		//	quick sorting:
 		interv.clear();
 		for(int key = 0; key<n_keys; key++) {
-			float max_interv = 10;
+			float max_interv = 100;
 			int max_i = 0;
 			for(int i=0; i<temp_i.size(); i++) {
 				if(max_interv>temp_i[i]) {
@@ -81,7 +82,7 @@ void tuning::make_tuning(int n_keys, bool mirror) {
 					max_i = i;
 				}
 			}
-			interv.push_back(max_interv);
+			interv.push_back(temp_i[max_i]);
 			std::cout<<"interval: "<<interv[key]<<std::endl;
 			temp_i.erase(temp_i.begin() + max_i);
 		}	//	end of sorting;
