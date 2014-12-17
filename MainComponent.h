@@ -73,6 +73,10 @@ public:
 	bool mirror_tuning;
 	float peak_tresh;
 
+     const char* backgroundtled_jpg;
+      int backgroundtled_jpgSize;
+	Image cachedImage_backgroundtled_jpg;
+
 private:
     //==============================================================================
     void audioCallback(float** buffer, int channels, int frames);
