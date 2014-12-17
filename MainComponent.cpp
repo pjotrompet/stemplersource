@@ -32,7 +32,7 @@ MainContentComponent::MainContentComponent()
 	(*tn_sldr).addListener(this);
 
 
-	(*tn_sldr).setRange(3, 12, 1);
+	(*tn_sldr).setRange(5, 11, 1);
 
 	th_sldr = new Slider(("lekker sliden!"));
 	(*th_sldr).setBounds(100, 50, 50, 260);
@@ -94,7 +94,7 @@ void MainContentComponent::buttonClicked(Button* button) {
 
 void MainContentComponent::sliderValueChanged(Slider* slider) {
 	if(slider == tn_sldr) {
-		change_keyboard((*slider).getValue());
+		change_keyboard((*slider).getValue()+1);
 	} else if (slider == th_sldr) {
 		peak_tresh = (*slider).getValue();
 	}
@@ -113,7 +113,7 @@ void MainContentComponent::change_keyboard(int keys) {
 		addAndMakeVisible(keyboard[key]);
 		keyboard[key]->addListener(this);
 	}
-	if(is_file_loaded && is_calc_done) (*ladder).make_tuning(keys, mirror_tuning);
+	if(is_file_loaded && is_calc_done) (*ladder).make_tuning(keys+1, mirror_tuning);
 }
 
 void MainContentComponent::load_button() {
