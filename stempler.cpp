@@ -94,7 +94,7 @@ float* tuning::get_peaks(float* mX, long N, bool smooth, float tresh) {
 	peaks[0] = 0; peaks[N] = 0;											// set bin 0 and N to 0.0
 	for(long k=1; k<N-1; k++) {											// iterate trough spectrum
 		peaks[k] = 0;													// init bin to 0
-		if((mX[k-1] < mX[k]) && (mX[k+1] < mX[k]) && (20*std::log10(mX[k]) > th)) {	// is bin peak?
+		if((mX[k-1] < mX[k]) && (mX[k+1] < mX[k]) && (mX[k] > th)) {	// is bin peak?
 			peaks[k] = mX[k];											// set magnitude of peak to bin
 			peak_count++;
 		}
