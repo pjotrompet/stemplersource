@@ -92,7 +92,7 @@ void MainContentComponent::buttonClicked(Button* button) {
 	}
 }
 
-void MainContentComponent::sliderValueChanged(Slider* slider) {
+void MainContentComponent::sliderValueChanged(Slider* slider) { 	
 	if(slider == tn_sldr) {
 		change_keyboard((*slider).getValue()+1);
 	} else if (slider == th_sldr) {
