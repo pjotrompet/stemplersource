@@ -22,6 +22,9 @@
     This component lives inside our window, and this is where you should put all
     your controls and content.
 */
+
+
+
 class note {
 public:
 	note(float* n_buf, long n_len, int n_chn, float n_speed);

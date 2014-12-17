@@ -3,6 +3,9 @@
 #include <cstdlib>
 #include <cmath>
 #include "stempler.h"
+#include "MainComponent.h"
+
+
 
 tuning::tuning(float* mX, long N, int n_keys, bool mirror, float tresh, int f_fs) {	// calculate tuning:
 	long pkc;
@@ -18,23 +21,39 @@ tuning::tuning(float* mX, long N, int n_keys, bool mirror, float tresh, int f_fs
 
 	long len;
 	
-	float** diss_curve = dissonance_curve(partials, f0bin, N, f_fs, &len);	//	2: calculate dissonance-curve
-	for(long i=0; i<len; i++) {
-		std::cout<<"interval: "<<diss_curve[i][0]<<" dissonance: "<<diss_curve[i][1]<<std::endl;
-	}
+	float** diss_curve = dissonance_curve(partials, f0bin, N, f_fs, &len);	//	3: calculate dissonance-curve
 	
 			
-										//	3: sort intervals on amount of dissonance
-										//	4: distill tuning from dissonance curve, n_keys and mirror
+	sort(diss_curve, len);									//	4: sort intervals on amount of dissonance
+	for(int i=0; i<sorted.size(); i++) {
+		std::cout<<"interv: "<<sorted[i].get_val1()<<"\tdiss:\t"<<sorted[i].get_val2()<<std::endl;
+	}
+																	//	5: distill tuning from dissonance curve, n_keys and mirror
+	
 }// tuning()
 
-float diss_curve_interp(int perc) {
-	float diss_curve[] = {0, 0.7, 1, 0.9, 0.8, 0.6, 0.4, 0.2, 0.1, 0, 0, 0};
-	float u_val = diss_curve[(int)((float)(perc/10)+1)];
-	float d_val = diss_curve[(int)((float)(perc/10))];
-	float val = d_val + ((u_val-d_val) * (perc/10-(int)(perc/10)));
-	return val;
+void tuning::sort(float** diss, long len) {
+	std::vector<vals> disson;
+	for(int i=0; i<len; i++) {
+		//0 = interval
+		disson.push_back(vals(diss[i][0], diss[i][1]));
+	}
+
+	this->sorted.clear();	
+	for(int i=0; i<len; i++) {
+		float max_diss = 0;
+		int max_index = 0;
+		for(int index = 0; index<disson.size(); index++) {
+			if(max_diss<disson[index].get_val2()) {
+				max_diss = disson[index].get_val2();
+				max_index = index;
+			}
+		}
+		sorted.push_back(vals(disson[max_index].get_val1(), disson[max_index].get_val2()));
+		disson.erase(disson.begin() + max_index);
+	}
 }
+
 
 float tuning::calc_ERB(long bin, int fs, long N) {
 	float freq = (float)bin * ((float)fs/(float)N);
@@ -86,12 +105,6 @@ float** tuning::dissonance_curve(float* partials, long f0bin, long N, int f_fs, 
 		for(long n=0; n<N; n++) {
 			if(n-(f0bin*intervals[i]) > 0) {
 				diss_curve[i]+=band_diss[n]*partials[(int)(n-(f0bin*intervals[i]))];
-				
-				if((/*partials[(int)(n-(f0bin*intervals[i]))] > 1*/band_diss[n] > 0)) {
-					std::cout<<"band diss: "<<band_diss[n]<<std::endl;
-					std::cout<<"prtls: "<<partials[(int)(n-(f0bin*intervals[i]))]<<std::endl;
-				}
-
 			}
 		}
 

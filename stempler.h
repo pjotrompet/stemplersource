@@ -5,6 +5,16 @@
 #ifndef STEMPLER_H_
 #define STEMPLER_H_
 
+class vals {
+public:
+	vals(float n_val1, float n_val2) { val1 = n_val1; val2 = n_val2;};
+	float get_val1() {return val1;}
+	float get_val2() { return val2;}
+private:
+	float val1;
+	float val2;
+};
+
 class key {
 public:
 	key(float n_freq);
@@ -24,6 +34,9 @@ private:
 	float calc_ERB(long bin, int fs, long N);
 	float calc_ERB_freq(float freq, int fs, long N);
 	float** dissonance_curve(float* partials, long f0bin, long N, int f_fs, long* len);
+	void sort(float** diss, long len);
+
+	std::vector<vals>sorted;
 };
 
 
