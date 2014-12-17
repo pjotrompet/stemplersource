@@ -29,7 +29,16 @@ MainContentComponent::MainContentComponent()
 	addAndMakeVisible(tn_sldr);
 	(*tn_sldr).addListener(this);
 
+
 	(*tn_sldr).setRange(3, 48, 1);
+
+	th_sldr = new Slider(("lekker sliden!"));
+	(*th_sldr).setBounds(100, 50, 50, 260);
+	(*th_sldr).setSliderStyle(Slider::LinearVertical);
+	addAndMakeVisible(th_sldr);
+	(*th_sldr).addListener(this);
+
+	(*th_sldr).setRange(1, 100);
 
  	load_but = new TextButton(("play"));
     (*load_but).setBounds(10, 10, 50, 20);
@@ -48,7 +57,7 @@ MainContentComponent::MainContentComponent()
 	
 	key_count = 3;								// amount of notes in tuning (per octave?) 	<-- maak een slider voor keuze aantal tonen?
 	mirror_tuning = true;						// invert intervals around 3/2				<-- maak schakelaar voor keuze inverteren?
-	peak_tresh = 1;							// peakdetection treshold					<--	maak een slider/draaiknop voor treshold?
+	peak_tresh = 10;							// peakdetection treshold					<--	maak een slider/draaiknop voor treshold?
 
 	toonh.push_back(1);
 	toonh.push_back(3.0/2);
@@ -84,6 +93,8 @@ void MainContentComponent::buttonClicked(Button* button) {
 void MainContentComponent::sliderValueChanged(Slider* slider) {
 	if(slider == tn_sldr) {
 		change_keyboard((*slider).getValue());
+	} else if (slider == th_sldr) {
+		peak_tresh = (*slider).getValue();
 	}
 }
 

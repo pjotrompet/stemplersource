@@ -79,6 +79,7 @@ private:
     TextButton* calc_but;
 	std::vector<ImageButton*> keyboard;
 	Slider* tn_sldr;
+	Slider* th_sldr;
 	void change_keyboard(int keys);	
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)

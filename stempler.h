@@ -20,8 +20,10 @@ public:
 private:
 	std::vector<key> keys;
 	float* get_peaks(float* mX, long N, bool smooth, float tresh);
-	int calc_ERB(long bin, int fs, long N);
-	float** dissonance_curve(float* peaks, long N, int f_fs, long* len);
+	float* get_partials(float* peaks, long N, int f_fs, long* f0bin);
+	float calc_ERB(long bin, int fs, long N);
+	float calc_ERB_freq(float freq, int fs, long N);
+	float** dissonance_curve(float* partials, long f0bin, long N, int f_fs, long* len);
 };
 
 

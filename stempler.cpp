@@ -5,16 +5,20 @@
 #include "stempler.h"
 
 tuning::tuning(float* mX, long N, int n_keys, bool mirror, float tresh, int f_fs) {	// calculate tuning:
+	long pkc;
 	float* peaks = get_peaks(mX, N, true, tresh);					//	1: find peaks in spectrum
 	for(long k=0; k<N; k++) {
 		if(peaks[k] > 0) {
 			//std::cout<<"bin: "<<k<<" val: "<<peaks[k]<<std::endl;
 		}
 	}
+	long f0bin;
+	float* partials = get_partials(peaks, N, f_fs, &f0bin);				//	2: extract partials
 	
+
 	long len;
 	
-	float** diss_curve = dissonance_curve(peaks, N, f_fs, &len);	//	2: calculate dissonance-curve
+	float** diss_curve = dissonance_curve(partials, f0bin, N, f_fs, &len);	//	2: calculate dissonance-curve
 	for(long i=0; i<len; i++) {
 		std::cout<<"interval: "<<diss_curve[i][0]<<" dissonance: "<<diss_curve[i][1]<<std::endl;
 	}
@@ -32,44 +36,70 @@ float diss_curve_interp(int perc) {
 	return val;
 }
 
-int tuning::calc_ERB(long bin, int fs, long N) {
+float tuning::calc_ERB(long bin, int fs, long N) {
 	float freq = (float)bin * ((float)fs/(float)N);
-	return (int)(24.7 * (4.37 * freq/1000 + 1));
+	float erb =  (float)(24.7 * (4.37 * freq/1000 + 1));
+	return erb * (((float)(N*2))/(float)fs);
+}
+float tuning::calc_ERB_freq(float freq, int fs, long N) {
+	return (float)(24.7 * (4.37 * freq/1000 + 1));
 }
 
-float** tuning::dissonance_curve(float* peaks, long N, int f_fs, long* len) {
+float** tuning::dissonance_curve(float* partials, long f0bin, long N, int f_fs, long* len) {
 	//!!!! GET PARTIALS (f0!!!!) (door phase-check??)
-
+	float max_val = 0;
+	for(long n=0; n<N; n++) {
+		if(partials[n] > max_val) max_val = partials[n];
+	}
+	for(long n=0; n<N; n++) {
+		partials[n]*=(1.0/max_val);
+	}
+		
 
 	//calculate dissonance of critical band around peaks:
-	float* band_diss = new float[N+calc_ERB(N, f_fs, N)];			
-	for(long k=1; k<N/2; k++) band_diss[k] = 0;	
-	for(long k=1; k<N/2; k++) {		
-		if(peaks[k] > 0) {
+	float* band_diss = new float[N+(int)calc_ERB(N, f_fs, N)];	
+	float erb_curve[] = {0, 0.7, 1, 0.9, 0.8, 0.6, 0.4, 0.2, 0.1, 0, 0, 0};		
+	for(long k=1; k<N; k++) band_diss[k] = 0;	
+	for(long k=1; k<N; k++) {		
+		if(partials[k] > 0) {
 			int ERB = calc_ERB(k, f_fs, N);
 			for(int i=0; i<ERB; i++) {
-				band_diss[k-i]+=peaks[k]*diss_curve_interp(100/ERB * i);
-				band_diss[k+i]+=peaks[k]*diss_curve_interp(100/ERB * i);
+				band_diss[k-i]+=partials[k]*erb_curve[(int)(10.0/(float)ERB * (float)i)];
+				band_diss[k+i]+=partials[k]*erb_curve[(int)(10.0/(float)ERB * (float)i)];
 			}
 		}
 	}
 
 	//calculate dissonance curve:
 	int diss_curve_len = 0;
-	for(float interv=1; interv<2; interv+=(0.5*(float)calc_ERB(interv, f_fs, N))) diss_curve_len++;
-	float* diss_curve = new float[diss_curve_len];		// allocate memory
+	float f0 = (float)f0bin * ((float)f_fs/((float)(2*N)));
+	for(float freq=f0; freq<f0*2; freq+=(0.5*calc_ERB_freq(freq, f_fs, N))) diss_curve_len++;
+	std::cout<<"diss curve len: "<<diss_curve_len<<std::endl;
+
+	double* diss_curve = new double[diss_curve_len];		// allocate memory
 	float* intervals = new float[diss_curve_len];
 	// calculate dissonance per interval:	
-	int index = 0;
-	for(float interv=1; interv<2; interv+=(0.5*(float)calc_ERB(interv, f_fs, N))) {
-		diss_curve[index] = 0;
-		for(long n=0; n<(N+calc_ERB(N, f_fs, N))*2; n++) {				//	-	band_diss[] will be static, peaks will move against it
-			if((n-(int)interv) >= 0) diss_curve[index]+=band_diss[n]*peaks[n-(int)interv];
+	float freq = f0;
+	for(long i=0; i<diss_curve_len; i++) {
+		diss_curve[i] = 0;
+		intervals[i] = freq/f0;
+		for(long n=0; n<N; n++) {
+			if(n-(f0bin*intervals[i]) > 0) {
+				diss_curve[i]+=band_diss[n]*partials[(int)(n-(f0bin*intervals[i]))];
+				
+				if((/*partials[(int)(n-(f0bin*intervals[i]))] > 1*/band_diss[n] > 0)) {
+					std::cout<<"band diss: "<<band_diss[n]<<std::endl;
+					std::cout<<"prtls: "<<partials[(int)(n-(f0bin*intervals[i]))]<<std::endl;
+				}
+
+			}
 		}
-		intervals[index] = interv;
-		index++;
-	}															
+
+		freq = freq + (0.5*calc_ERB_freq(freq, f_fs, N));
+	}
+													
 	float** diss_per_interv = new float*[diss_curve_len];
+
 	for(long i=0; i<diss_curve_len; i++) {
 		diss_per_interv[i] = new float[2];
 	}
@@ -77,8 +107,30 @@ float** tuning::dissonance_curve(float* peaks, long N, int f_fs, long* len) {
 		diss_per_interv[i][0] = intervals[i];
 		diss_per_interv[i][1] = diss_curve[i];
 	}
+
 	*len = diss_curve_len;
 	return diss_per_interv;
+}
+
+float* tuning::get_partials(float* peaks, long N, int f_fs, long* f0bin) {
+	long max_bin = 0;
+	float max_val = 0;
+	long pkc = 0;
+	for(long bin = 0; bin<N; bin++) {
+		if(peaks[bin] > max_val) {
+			max_val = peaks[bin];
+			max_bin = bin;
+		}
+	}
+	std::cout<<"f0?: "<<(float)max_bin*(float)f_fs/((float)2*N)<<" N "<<N<<std::endl;
+	float* part = new float[N];
+	for(long bin = 0; bin<N; bin++) {
+		if(bin<max_bin) part[bin] = 0;
+		else part[bin] = peaks[bin];
+	}
+	*f0bin = max_bin;
+	
+	return part;
 }
 
 float* tuning::get_peaks(float* mX, long N, bool smooth, float tresh) {
@@ -99,6 +151,7 @@ float* tuning::get_peaks(float* mX, long N, bool smooth, float tresh) {
 			peak_count++;
 		}
 	}
+
 	std::cout<<"peaks found: "<<peak_count<<std::endl;
 	return peaks;
 }
